@@ -38,5 +38,6 @@ Example Record:
   "itemName": "Bread",
   "expiryDate": "2025-01-10"
 }
-sahil
 
+
+## 3️⃣ DynamoDB Table Structure
