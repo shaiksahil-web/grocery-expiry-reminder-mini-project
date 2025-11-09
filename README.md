@@ -39,3 +39,9 @@ Example Record:
   "expiryDate": "2025-01-10"
 }
 
+4️⃣ Lambda Functions Used
+A) Add Grocery Item (addgroceryitems.py)
+
+Flow: UI → API Gateway → Lambda → DynamoDB
+
+Stores a grocery item with its expiry date.
