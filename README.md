@@ -24,20 +24,58 @@ This project sends an **email alert** before any stored grocery item expires.
 | **HTML UI** | Simple form-based UI for adding/viewing items |
 
 ---
+step 3 in the last
+---
 
-## 3️⃣ DynamoDB Table Structure
+## 4️⃣ Lambda Functions Used
 
-| Attribute | Type | Purpose |
-|----------|------|---------|
-| `itemName` | String (Partition Key) | Grocery item name |
-| `expiryDate` | String (YYYY-MM-DD) | Expiry date of item |
+This project uses **three AWS Lambda functions**, each serving a specific purpose in the Grocery Expiry Reminder workflow.
 
-Example Record:
-```json
-{
-  "itemName": "Bread",
-  "expiryDate": "2025-01-10"
-}
+---
 
+### A) Add Grocery Item (`addgroceryitems.py`)
 
-## 3️⃣ DynamoDB Table Structure
+**Purpose:**  
+Adds a new grocery item along with its expiry date to DynamoDB.
+
+**Flow:**  
+UI → API Gateway → Lambda → DynamoDB
+
+**Code:**
+```python
+import json
+import boto3
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('groceryitems')
+
+def lambda_handler(event, context):
+    body = json.loads(event['body'])
+    table.put_item(Item={
+        'itemName': body['itemName'],
+        'expiryDate': body['expiryDate']
+    })
+    return {"statusCode": 200, "body": "Item Added Successfully"}
+
+---
+
+### B) View Grocery Items (getgroceryitems.py)
+
+Purpose:
+Retrieves all grocery items stored in DynamoDB and displays them in the UI.
+
+Code:
+
+import json
+import boto3
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('groceryitems')
+
+def lambda_handler(event, context):
+    response = table.scan()
+    return {
+        "statusCode": 200,
+        "body": json.dumps(response['Items'])
+    }
+
