@@ -42,40 +42,56 @@ Adds a new grocery item along with its expiry date to DynamoDB.
 UI → API Gateway → Lambda → DynamoDB
 
 **Code:**
-```python
-import json
-import boto3
-
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('groceryitems')
-
-def lambda_handler(event, context):
-    body = json.loads(event['body'])
-    table.put_item(Item={
-        'itemName': body['itemName'],
-        'expiryDate': body['expiryDate']
-    })
-    return {"statusCode": 200, "body": "Item Added Successfully"}
 
 ---
 
-### B) View Grocery Items (getgroceryitems.py)
+### **B) View Grocery Items** (`getgroceryitems.py`)
+
+**Purpose:**  
+Fetches and returns all grocery items stored in DynamoDB, so the UI can display them.
+
+**Code:**
+
+---
+
+## C) Expiry Checker Notification (expiryChecker.py)
 
 Purpose:
-Retrieves all grocery items stored in DynamoDB and displays them in the UI.
+Runs daily (using EventBridge Scheduler) to check items that are close to or past their expiry date.
+If an item is expiring, it sends an email notification via SNS.
 
-Code:
+**Logic Used:**
 
-import json
-import boto3
+Get today's date
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('groceryitems')
+Compare with each item's expiry date
 
-def lambda_handler(event, context):
-    response = table.scan()
-    return {
-        "statusCode": 200,
-        "body": json.dumps(response['Items'])
-    }
+If expiry date is today or tomorrow, send alert via SNS
 
+**Code:**
+
+---
+
+## D) UI Web Page (index.html)
+
+**Purpose:**
+Front-end user interface to:
+
+Add new grocery items
+
+View the list of stored grocery items
+
+**Flow:**
+Web UI → API Gateway → Lambda → DynamoDB
+
+**Features in UI:**
+| Action           | Lambda Called        | API Triggered     |
+| ---------------- | -------------------- | ----------------- |
+| Add Grocery Item | `addgroceryitems.py` | POST API Endpoint |
+| View All Items   | `getgroceryitems.py` | GET API Endpoint  |
+
+## Note: The UI is static HTML + JavaScript, deployed:
+
+**either locally**,
+
+or in **AWS S3 (Static website hosting).**
