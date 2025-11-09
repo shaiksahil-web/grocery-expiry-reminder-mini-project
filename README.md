@@ -39,6 +39,7 @@ Example Record:
   "expiryDate": "2025-01-10"
 }
 
+
 ---
 
 ## 4️⃣ Lambda Functions Used
